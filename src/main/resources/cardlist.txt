@@ -42,7 +42,7 @@
 42 ; Flying Leech ; creature ; 4 ; 4 ; 2 ; --D---; 0 ; 0 ; 0 ; 
 43 ; Screeching Nightmare ; creature ; 6 ; 5 ; 5 ; --D---; 0 ; 0 ; 0 ; 
 44 ; Deathstalker ; creature ; 6 ; 3 ; 7 ; --D-L-; 0 ; 0 ; 0 ; 
-45 ; Night Howler ; creature ; 6 ; 6 ; 5 ; B-D---; -3 ; 0 ; 0 ; 
+45 ; Night Howler ; creature ; 6 ; 6 ; 5 ; B-D---; -3 ; 0 ; 0 ;  Summon: You lose 3 health.
 46 ; Soul Devourer ; creature ; 9 ; 7 ; 7 ; --D---; 0 ; 0 ; 0 ; 
 47 ; Gnipper ; creature ; 2 ; 1 ; 5 ; --D---; 0 ; 0 ; 0 ; 
 48 ; Venom Hedgehog ; creature ; 1 ; 1 ; 1 ; ----L-; 0 ; 0 ; 0 ; 
@@ -86,7 +86,7 @@
 86 ; Crazed Nose-pincher ; creature ; 3 ; 1 ; 5 ; -C----; 0 ; 0 ; 0 ; 
 87 ; Bloat Demon ; creature ; 4 ; 2 ; 5 ; -C-G--; 0 ; 0 ; 0 ; 
 88 ; Abyss Nightmare ; creature ; 5 ; 4 ; 4 ; -C----; 0 ; 0 ; 0 ; 
-89 ; Boombeak ; creature ; 5 ; 4 ; 1 ; -C----; 2 ; 0 ; 0 ; 
+89 ; Boombeak ; creature ; 5 ; 4 ; 1 ; -C----; 2 ; 0 ; 0 ;  Summon: You gain 2 health.
 90 ; Eldritch Swooper ; creature ; 8 ; 5 ; 5 ; -C----; 0 ; 0 ; 0 ; 
 91 ; Flumpy ; creature ; 0 ; 1 ; 2 ; ---G--; 0 ; +1 ; 0 ; Summon: Your opponent gains 1 health 
 92 ; Wurm ; creature ; 1 ; 0 ; 1 ; ---G--; +2 ; 0 ; 0; Summon: You gain 2 health. 
