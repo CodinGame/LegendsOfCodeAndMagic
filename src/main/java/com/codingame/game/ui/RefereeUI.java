@@ -225,7 +225,7 @@ public class RefereeUI {
         ArrayList<Action> actions = engine.state.players[playerIndex].performedActions;
         Action action = actions.size() == 0 ? null : actions.get(actions.size() - 1);
 
-        if (action != null && !action.text.isEmpty()) {
+        if (action != null && action.text != null && !action.text.isEmpty()) {
             players[playerIndex].talk(action.text, false);
         } else {
             players[playerIndex].hideBubble();

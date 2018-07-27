@@ -174,7 +174,8 @@ public class EngineReferee {
         while (!actionsToHandle.isEmpty()) {
             Action a = actionsToHandle.get(0);
             if (a.type == Type.PASS) {
-                actionsToHandle.remove(0); // pop         
+                actionsToHandle.remove(0); // pop
+                continue;
             }
             if (legals.contains(a))
                 break;

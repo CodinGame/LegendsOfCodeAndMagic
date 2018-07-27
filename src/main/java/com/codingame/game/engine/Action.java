@@ -56,42 +56,42 @@ public class Action
 
     if (type==Type.SUMMON)
     {
-      String[] args = str[1].split(" ", 2);
-      int arg1;
-
       try
       {
-        arg1 = Integer.parseInt(args[0]);
+      String[] args = str[1].split(" ", 2);
+      int arg1;      
+      arg1 = Integer.parseInt(args[0]);
+      String text = args.length < 2 ? "" : args[1].trim();
+      return Action.newSummon(arg1, text);      
       }
       catch (Exception e)
       {
         throw new InvalidActionHard("Invalid SUMMON argument. Expected integer (card id).");
       }
-
-      String text = args.length < 2 ? "" : args[1].trim();
-      return Action.newSummon(arg1, text);
     }
     else if (type==Type.PASS) {
     	return Action.newPass();
     }
     else {
-      String[] args = str[1].split(" ", 3);
-
-      int arg1;
-      int arg2;
+      
 
       try
       {
+          String[] args = str[1].split(" ", 3);
+
+          int arg1;
+          int arg2;
         arg1 = Integer.parseInt(args[0]);
         arg2 = Integer.parseInt(args[1]);
+        String text = args.length < 3 ? "" : args[2].trim();
+        return type==Type.ATTACK ? Action.newAttack(arg1, arg2, text) : Action.newUse(arg1, arg2, text);
       }
       catch (Exception e)
       {
         throw new InvalidActionHard("Invalid "+type.toString()+" arguments. Expected two integers (card id and target id).");
       }
 
-      String text = args.length < 3 ? "" : args[2].trim();
-      return type==Type.ATTACK ? Action.newAttack(arg1, arg2, text) : Action.newUse(arg1, arg2, text);
+      
     }
   }
 
@@ -129,6 +129,7 @@ public class Action
   public static Action newPass() {
 	Action a = new Action();
     a.type = Type.PASS;
+    a.text = "";
     return a;
   }
 
