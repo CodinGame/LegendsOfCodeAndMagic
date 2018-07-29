@@ -22,7 +22,7 @@ public class CreatureOnBoard
   public boolean canAttack;
   public boolean hasAttacked;
   public int lastTurnDefense;
-  
+
   public Card baseCard;
 
   public CreatureOnBoard (CreatureOnBoard creature)
@@ -31,6 +31,7 @@ public class CreatureOnBoard
     this.baseId = creature.baseId;
     this.attack = creature.attack;
     this.defense = creature.defense;
+    this.cost = creature.cost;
     this.keywords = new Keywords(creature.keywords);
     this.lastTurnDefense = creature.lastTurnDefense;
     baseCard = creature.baseCard;
@@ -99,7 +100,7 @@ public class CreatureOnBoard
     sb.append(this.keywords);
     return sb.toString();
   }
-  
+
   public String getAsInput(boolean isOpponentBoard) {
 	  int position = isOpponentBoard? -1: 1;
 	  StringBuilder s = new StringBuilder();
