@@ -29,6 +29,7 @@ public class CreatureOnBoard
   {
     this.id = creature.id;
     this.baseId = creature.baseId;
+    this.cost = creature.cost;
     this.attack = creature.attack;
     this.defense = creature.defense;
     this.keywords = new Keywords(creature.keywords);
