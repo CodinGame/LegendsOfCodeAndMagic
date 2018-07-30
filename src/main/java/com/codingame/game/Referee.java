@@ -5,6 +5,7 @@ import com.codingame.game.ui.RefereeUI;
 import com.codingame.gameengine.core.AbstractReferee;
 import com.codingame.gameengine.core.MultiplayerGameManager;
 import com.codingame.gameengine.module.entities.GraphicEntityModule;
+import com.codingame.view.FXModule;
 import com.codingame.view.endscreen.EndScreenModule;
 import com.google.inject.Inject;
 
@@ -12,6 +13,7 @@ public class Referee extends AbstractReferee {
     @Inject private MultiplayerGameManager<Player> gameManager;
     @Inject private GraphicEntityModule graphicEntityModule;
     @Inject private EndScreenModule endScreenModule;
+    @Inject private FXModule fxModule;
 
     private EngineReferee engine = new EngineReferee();
     private RefereeUI ui = new RefereeUI();
@@ -28,6 +30,7 @@ public class Referee extends AbstractReferee {
         ui.engine = engine;
         ui.gameManager = gameManager;
         ui.graphicEntityModule = graphicEntityModule;
+        ui.fxModule = fxModule;
         ui.init();
     }
 

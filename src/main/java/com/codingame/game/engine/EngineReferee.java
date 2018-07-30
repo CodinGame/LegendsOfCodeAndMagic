@@ -95,7 +95,7 @@ public class EngineReferee {
             try {
                 String output = sdkplayer.getOutputs().get(0);
                 DraftPhase.ChoiceResultPair choice = draft.PlayerChoice(gameTurn, output, player);
-                draft.text = choice.text;
+                draft.text[player] = choice.text;
                 gameManager.addToGameSummary(
                     String.format("Player %s chose %s", sdkplayer.getNicknameToken(), choice.card.toDescriptiveString())
                 );

@@ -38,13 +38,15 @@ public class ConstantsUI {
 
     public static final Vector2D PLAYER_AVATAR     = new Vector2D(229, 112);
     public static final Vector2D PLAYER_AVATAR_DIM = new Vector2D(137, 137);
-    public static final Vector2D PLAYER_DRAW       = new Vector2D(378, 343); // new Vector2D(378, 369);
-    public static final Vector2D PLAYER_DECK       = new Vector2D(378, 395);
+    public static final Vector2D PLAYER_DRAW_TXT = new Vector2D(378, 343); // new Vector2D(378, 369);
+    public static final Vector2D PLAYER_DECK_POS = new Vector2D(326, 307);
+    public static final int PLAYER_DECK_OFFSET = 606;
+    public static final Vector2D PLAYER_DECK_TXT = new Vector2D(378, 395);
     public static final Vector2D PLAYER_DECK_DIM   = new Vector2D(100, 131);
     public static final Vector2D PLAYER_FRAME_DIM  = new Vector2D(183, 183);
-    public static final Vector2D PLAYER_HEALTH     = new Vector2D(95,  370);
-    public static final Vector2D PLAYER_MANA       = new Vector2D(245, 370);
-    public static final Vector2D PLAYER_NICK       = new Vector2D(229, 250);
+    public static final Vector2D PLAYER_HEALTH_TXT = new Vector2D(95,  370);
+    public static final Vector2D PLAYER_MANA_TXT = new Vector2D(245, 370);
+    public static final Vector2D PLAYER_NICK_TXT = new Vector2D(229, 250);
 
     public static final Vector2D[] PLAYER_RUNES = {
         new Vector2D(95,  434),
@@ -76,4 +78,15 @@ public class ConstantsUI {
         -(int) (ConstantsUI.CARD_BOARD_DIM.x * (ConstantsUI.LIFTED_CARD_BOARD_SCALE - ConstantsUI.CARD_BOARD_SCALE) / 2),
         -(int) (ConstantsUI.CARD_BOARD_DIM.y * (ConstantsUI.LIFTED_CARD_BOARD_SCALE - ConstantsUI.CARD_BOARD_SCALE) / 2)
         );
+
+    public static final int MC_GRAPH_LOWY = SCREEN_DIM.y - 40;
+    public static final int MC_COST_FONTSIZE = 30;
+    public static final int MC_QUANTITY_FONTSIZE = 24;
+    public static final int MC_COST_WIDTH = 100;
+    public static final int MC_GRAPH_WIDTH = 80;
+    public static final int MC_COST_X = 470 + (SCREEN_DIM.x-470 - 7*MC_COST_WIDTH)/2;
+    public static final int MC_GRAPH_STEP = 25;
+    public static final int MC_GRAPH_MAXSIZE = 175;
+    public static final int MC_GRAPH_ZEROSIZE = 2;
+    public static final int[] MC_PLAYERS_OFFSET = {0, -860};
 }

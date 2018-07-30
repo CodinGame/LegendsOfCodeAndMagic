@@ -10,6 +10,7 @@ import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.Scanner;
 
 /**
  * Created by aCat on 2018-03-22.
@@ -80,7 +81,8 @@ public final class Constants
 
   public static void GenerateCardlistHTML(String templatePath, String outHTMLPath) throws IOException
   {
-    String template = new String(Files.readAllBytes(Paths.get(templatePath)));
+    Scanner s = new Scanner(new InputStreamReader(ClassLoader.getSystemResourceAsStream(templatePath), "UTF-8")).useDelimiter("\\A");
+    String template = s.hasNext() ? s.next() : "";
     StringBuilder sb = new StringBuilder();
 
     for (Card c : CARDSET.values())

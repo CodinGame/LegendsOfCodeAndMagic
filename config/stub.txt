@@ -1,0 +1,11 @@
+gameloop
+loop 2
+   read playerHealth:int playerMana:int playerDeck:int playerRune:int
+
+read opponentHand:int
+read cardCount:int
+
+loop cardCount
+   read cardNumber:int instanceId:int location:int cardType:int cost:int attack:int defense:int abilities:word(6) myHealthChange:int opponentHealthChange:int cardDraw:int
+
+write PASS

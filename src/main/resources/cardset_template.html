@@ -1,0 +1,92 @@
+<!doctype html>
+<html>
+
+    <head>
+        <title>Legends of Code and Magic</title>
+
+        <style type="text/css">
+            * {
+                box-sizing: content-box;
+            }
+
+            a {
+                text-decoration: none;
+                color: #009933;
+            }
+
+            a .enlarge {
+                position: fixed;
+                left: 1em;
+                top: 50%%;
+                transform: translateY(-50%%);
+            }
+
+            td:not(:hover) .enlarge {
+                display: none;
+            }
+
+            body, html {
+                width: 100%%;
+            }
+
+            body {
+                margin: 0;
+            }
+
+            table {
+                color: #333;
+                font-family: Helvetica, Arial, sans-serif;
+                margin: 0 auto;
+                border-collapse: collapse;
+                border-spacing: 0;
+            }
+
+            td, th {
+                border: 1px solid #CCC;
+                height: 30px;
+                min-width:50px
+            }
+
+            td {
+                background: #FAFAFA;
+                text-align: center;
+            }
+
+            th {
+                background: #F3F3F3;
+                font-weight: bold;
+                position: sticky;
+                top: -1px;
+            }
+
+            .keywords
+            {
+                font-family: monospace;
+                font-size: 18px;
+            }
+        </style>
+    </head>
+    <body>
+        <table>
+            <thead>
+                <tr>
+                    <th><b>Id</b></th>
+                    <th><b>Image</b></th>
+                    <th><b>Name</b></th>
+                    <th><b>Type</b></th>
+                    <th><b>Cost</b></th>
+                    <th><b>Damage</b></th>
+                    <th><b>Health</b></th>
+                    <th><b>Abilities</b></th>
+                    <th><b>PlayerHP</b></th>
+                    <th><b>EnemyHP</b></th>
+                    <th><b>CardDraw</b></th>
+                    <th><b>Text description</b></th>
+                </tr>
+            </thead>
+            <tbody>
+%s
+            </tbody>
+        </table>
+    </body>
+</html>

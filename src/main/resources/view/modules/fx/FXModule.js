@@ -2,7 +2,8 @@ import { api as entityModule } from '../../entity-module/GraphicEntityModule.js'
 import {lerp, unlerp, fitAspectRatio} from '../../core/utils.js'
 
 export const api = {
-  showDamage: true
+  showDamage: true,
+  showCurve: false
 }
 
 export class FXModule {
@@ -11,6 +12,7 @@ export class FXModule {
     this.time = 0
     this.impacts = []
     this.mustShrinkNickname = true
+    this.nicknameIds = []
   }
 
   static get name () {
@@ -33,8 +35,8 @@ export class FXModule {
 
     if (this.mustShrinkNickname) {
       this.mustShrinkNickname = false
-      let playersTexts = [entityModule.entities.get(18), entityModule.entities.get(40)]
-      playersTexts.forEach(entity => {
+      this.nicknameIds.forEach(entityId => {
+        let entity = entityModule.entities.get(entityId)
         if (!entity.currentState.text || entity.currentState.text === '') {
           this.mustShrinkNickname = true
         } else {
@@ -75,7 +77,7 @@ export class FXModule {
     }
   }
 
-  handleGlobalData (players, globalData) {
-
+  handleGlobalData (players, nicknameIds) {
+    this.nicknameIds = nicknameIds || []
   }
 }

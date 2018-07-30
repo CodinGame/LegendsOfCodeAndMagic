@@ -22,7 +22,7 @@ public class DraftPhase
   public ArrayList<Card>[] chosenCards;
   public ArrayList<Card>[] decks; // after shuffle and assigning unique id's
   
-  public String text;
+  public String[] text = new String[2];
 
   private Random choicesRNG;
   private Random[] shufflesRNG;

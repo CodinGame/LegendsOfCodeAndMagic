@@ -2,6 +2,7 @@ package com.codingame.game.ui;
 
 import com.codingame.game.Player;
 import com.codingame.game.engine.ActionResult;
+import com.codingame.game.engine.Constants;
 import com.codingame.game.engine.Gamer;
 import com.codingame.gameengine.module.entities.Curve;
 import com.codingame.gameengine.module.entities.GraphicEntityModule;
@@ -55,8 +56,8 @@ public class PlayerUI {
             .setFontSize(40)
             .setStrokeColor(0x000000)
             .setStrokeThickness(4.0)
-            .setX(Vector2D.add(ConstantsUI.PLAYER_DRAW, offset).x)
-            .setY(Vector2D.add(ConstantsUI.PLAYER_DRAW, offset).y);
+            .setX(Vector2D.add(ConstantsUI.PLAYER_DRAW_TXT, offset).x)
+            .setY(Vector2D.add(ConstantsUI.PLAYER_DRAW_TXT, offset).y);
 
         deck = graphicEntityModule.createText("")
                 .setAnchor(0.5)
@@ -64,8 +65,8 @@ public class PlayerUI {
                 .setFontSize(40)
                 .setStrokeColor(0x000000)
                 .setStrokeThickness(4.0)
-                .setX(Vector2D.add(ConstantsUI.PLAYER_DECK, offset).x)
-                .setY(Vector2D.add(ConstantsUI.PLAYER_DECK, offset).y);
+                .setX(Vector2D.add(ConstantsUI.PLAYER_DECK_TXT, offset).x)
+                .setY(Vector2D.add(ConstantsUI.PLAYER_DECK_TXT, offset).y);
 
         frame[0] = graphicEntityModule.createSprite()
             .setAlpha(0)
@@ -90,8 +91,8 @@ public class PlayerUI {
             .setFontSize(40)
             .setStrokeColor(0x000000)
             .setStrokeThickness(4.0)
-            .setX(Vector2D.add(ConstantsUI.PLAYER_HEALTH, offset).x)
-            .setY(Vector2D.add(ConstantsUI.PLAYER_HEALTH, offset).y);
+            .setX(Vector2D.add(ConstantsUI.PLAYER_HEALTH_TXT, offset).x)
+            .setY(Vector2D.add(ConstantsUI.PLAYER_HEALTH_TXT, offset).y);
 
         damageFloat = graphicEntityModule.createText("")
             .setAnchor(0.5)
@@ -157,8 +158,8 @@ public class PlayerUI {
             .setFontSize(40)
             .setStrokeColor(0x000000)
             .setStrokeThickness(4.0)
-            .setX(Vector2D.add(ConstantsUI.PLAYER_MANA, offset).x)
-            .setY(Vector2D.add(ConstantsUI.PLAYER_MANA, offset).y);
+            .setX(Vector2D.add(ConstantsUI.PLAYER_MANA_TXT, offset).x)
+            .setY(Vector2D.add(ConstantsUI.PLAYER_MANA_TXT, offset).y);
 
         nick = graphicEntityModule.createText(player.getNicknameToken())
             .setAnchor(0.5)
@@ -166,8 +167,9 @@ public class PlayerUI {
             .setFontSize(60)
             .setStrokeColor(0x000000)
             .setStrokeThickness(4.0)
-            .setX(Vector2D.add(ConstantsUI.PLAYER_NICK, offset).x)
-            .setY(Vector2D.add(ConstantsUI.PLAYER_NICK, offset).y);
+            .setX(Vector2D.add(ConstantsUI.PLAYER_NICK_TXT, offset).x)
+            .setY(Vector2D.add(ConstantsUI.PLAYER_NICK_TXT, offset).y);
+        
 
         for (int index = 0; index < 5; ++index)
             runes[index] = graphicEntityModule
@@ -192,7 +194,17 @@ public class PlayerUI {
     public PlayerUI updateStats(Gamer gamer)
     {
         draw.setText("+" + Integer.toString(gamer.nextTurnDraw));
-        deck.setText(Integer.toString(gamer.deck.size()));
+        if (gamer.hand.size()+gamer.nextTurnDraw > Constants.MAX_CARDS_IN_HAND) // show overdraw
+            draw.setFillColor(0xff5500);
+        else
+            draw.setFillColor(0xffffff);
+
+        deck.setText(Integer.toString(gamer.deck.size())); // show empty deck approaching
+        if (gamer.deck.size() == 0)
+            deck.setFillColor(0xff0000);
+        else if (gamer.deck.size() <= 5)
+            deck.setFillColor(0xff5500);
+
         damageFloat.setText("");
         healFloat.setText("");
         hideImpact();
@@ -288,5 +300,9 @@ public class PlayerUI {
         bubbleSprite.setAlpha(0, Curve.NONE);
         bubbleText.setText("");
         graphicEntityModule.commitEntityState(0, bubbleText, bubbleSprite);
+    }
+
+    public Text getNick() {
+        return nick;
     }
 }
