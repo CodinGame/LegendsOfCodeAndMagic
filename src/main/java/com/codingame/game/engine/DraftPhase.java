@@ -205,11 +205,10 @@ public class DraftPhase
     }
   }
   
-  public String[] getMockPlayersInput() {
+  public String[] getMockPlayersInput(int player, int turn) {
 	    ArrayList<String> lines = new ArrayList<>();
-	    String s = join(Constants.INITIAL_HEALTH, 0, decks[0].size(), 25);
-	    lines.add(s);
-	    lines.add(s);
+	    lines.add(join(Constants.INITIAL_HEALTH, 0, turn , 25));
+	    lines.add(join(Constants.INITIAL_HEALTH, 0, player==0 ? turn : (turn+1), 25));
 	    lines.add("0");
 	    lines.add("3");
 	    

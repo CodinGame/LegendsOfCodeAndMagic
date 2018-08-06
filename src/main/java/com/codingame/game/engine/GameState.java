@@ -291,7 +291,7 @@ public class GameState
   {
     if (players[1-currentPlayer].health <= 0) // first proper win
       winner = currentPlayer;
-    if (players[currentPlayer].health <= 0) // second self-kill
+    else if (players[currentPlayer].health <= 0) // second self-kill
       winner = 1-currentPlayer;
   }
 
