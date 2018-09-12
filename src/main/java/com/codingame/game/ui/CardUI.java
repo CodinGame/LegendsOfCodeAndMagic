@@ -92,7 +92,7 @@ public class CardUI {
             .setZIndex(4)
             .setX((int) (ConstantsUI.CARD_DIM.x * (3f/300)))
             .setY((int) (ConstantsUI.CARD_DIM.y * (170f/370)));
-        
+
 
         shadow = graphicEntityModule.createSprite()
             .setAlpha(0)
@@ -102,13 +102,13 @@ public class CardUI {
             .setImage("shadow.png")
             //.setTint(0x808080)
             .setZIndex(0);
-        
+
         impact = graphicEntityModule.createSprite()
             .setAlpha(0)
             .setAnchor(.5)
             .setImage("impact.png")
             .setZIndex(1);
-        
+
         heal = graphicEntityModule.createSprite()
             .setAlpha(0)
             .setAnchor(.5)
@@ -122,7 +122,7 @@ public class CardUI {
             .setStrokeColor(0x000000)
             .setStrokeThickness(2.0)
             .setZIndex(2);
-        
+
         healFloat = graphicEntityModule.createText("")
             .setAnchor(0.5)
             .setFillColor(0xffffff)
@@ -169,11 +169,6 @@ public class CardUI {
                     .setZIndex(2)
             );
         }
-
-        
-        
-        
-        
 
         for (int index = 0; index < 6; ++index)
         {
@@ -417,6 +412,12 @@ public class CardUI {
 
     public CardUI setVisibility(double alpha) {
         group.setAlpha(alpha);
+        return this;
+    }
+
+    public CardUI touch() {
+        double alpha = group.getAlpha();
+        group.setAlpha(alpha + 0.0001 * (alpha == 1 ? -1 : 1));
         return this;
     }
 }

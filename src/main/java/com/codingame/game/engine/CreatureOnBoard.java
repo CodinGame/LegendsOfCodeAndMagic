@@ -22,6 +22,8 @@ public class CreatureOnBoard
   public boolean canAttack;
   public boolean hasAttacked;
   public int lastTurnDefense;
+
+  public int lane; // usually 0 or 1
   
   public Card baseCard;
 
@@ -37,6 +39,7 @@ public class CreatureOnBoard
     baseCard = creature.baseCard;
     this.canAttack = creature.canAttack;
     this.hasAttacked = creature.hasAttacked;
+    this.lane = creature.lane;
   }
 
   /**
@@ -52,9 +55,10 @@ public class CreatureOnBoard
     this.keywords = new Keywords(creature[4]);
     this.canAttack = this.keywords.hasCharge;
     this.lastTurnDefense = this.defense;
+    this.lane = 0;
   }
 
-  public CreatureOnBoard (Card card)
+  public CreatureOnBoard (Card card, int lane)
   {
     this.id = card.id;
     this.baseId = card.baseId;
@@ -68,6 +72,12 @@ public class CreatureOnBoard
     this.oppHealthChange = card.oppHealthChange;
     this.cardDraw = card.cardDraw;
     baseCard = card;
+    this.lane = lane;
+  }
+
+  public CreatureOnBoard (Card card)
+  {
+    this(card, -1);
   }
 
   public String generateText()
@@ -115,6 +125,8 @@ public class CreatureOnBoard
 	  s.append(myHealthChange).append(" ");
 	  s.append(oppHealthChange).append(" ");
 	  s.append(cardDraw).append(" ");
+    if (Constants.LANES > 1)
+      s.append(this.lane).append(" ");
 	  return s.toString();
   }
 

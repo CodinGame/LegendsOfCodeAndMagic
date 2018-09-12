@@ -18,7 +18,7 @@ public class Referee extends AbstractReferee {
     private EngineReferee engine = new EngineReferee();
     private RefereeUI ui = new RefereeUI();
 
-    public static int turn = 0;
+    //public static int turn = 0;
     
     @Override
     public void init()
@@ -37,9 +37,9 @@ public class Referee extends AbstractReferee {
     @Override
     public void gameTurn(int turn)
     {
-        this.turn = turn;
+        //this.turn = turn;
         // Engine
-        boolean end = engine.refereeGameTurn(gameManager, turn, ui);
+        boolean end = engine.refereeGameTurn(gameManager, ui);
     }
 
     @Override

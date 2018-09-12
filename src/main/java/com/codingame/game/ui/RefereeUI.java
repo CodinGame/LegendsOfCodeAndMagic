@@ -29,7 +29,7 @@ public class RefereeUI {
     public MultiplayerGameManager<Player> gameManager;
     public GraphicEntityModule graphicEntityModule;
     public FXModule fxModule;
-    
+
     private TooltipModule tooltipModule;
 
     private Map<Integer, CardUI> cardsPool = new HashMap<>();
@@ -41,14 +41,22 @@ public class RefereeUI {
     private Rectangle[][] manaCurve = new Rectangle[2][8];
     private Text[][] manaCurveQuantity = new Text[2][8];
 
+    private Text[] cardTypesInfo = new Text[2];
+    private Text[] cardTypesQuantity = new Text[2];
+
     private Sprite newTurnBackground;
     private Text newTurn;
     private int lastturn = -1;
 
+    int showdraftShownrows = 0;
+    int showdraftLoaded = 0;
+    Rectangle showdraftBackground;
+    private Text[] showdraftQuantity = new Text[90];
+
 
     public void init() {
         tooltipModule = new TooltipModule(gameManager);
-        gameManager.setFrameDuration(Constants.FRAME_DURATION_DRAFT);
+        gameManager.setFrameDuration(Constants.FRAME_DURATION_SHOWDRAFT);
 
         graphicEntityModule.createSpriteSheetLoader()
             .setName("atlas-")
@@ -74,14 +82,143 @@ public class RefereeUI {
                 .setY(482)
                 .setAlpha(0);
 
-        for (Player player : gameManager.getPlayers()) {
+        for (Player player : gameManager.getPlayers())
+        {
             players[player.getIndex()] = new PlayerUI(graphicEntityModule, player);
             fxModule.registerNickname(players[player.getIndex()].getNick());
         }
+
+        // showdraft preparations
+        showdraftBackground = graphicEntityModule.createRectangle()
+                .setFillColor(0x000000)
+                .setAlpha(1.0)
+                .setHeight(ConstantsUI.SCREEN_DIM.y)
+                .setWidth(ConstantsUI.SCREEN_DIM.x)
+                .setX(0)
+                .setY(0);
+        showDraftCards(engine.initGameTurn, true);
     }
 
-    public void draft(int turn) {
-        if (turn == 0) {
+
+    public void showDraftCards(int turn, boolean isinit)
+    {
+      if (turn==0) // exiting show draft phase
+      {
+        double hideAt = 0.50;
+        double zeroAt = 0.99;
+
+        gameManager.setFrameDuration(Constants.FRAME_DURATION_SHOWDRAFT_LAST);
+
+        showdraftBackground.setAlpha(0.99);
+        graphicEntityModule.commitEntityState(hideAt, showdraftBackground);
+        showdraftBackground.setAlpha(0);
+        graphicEntityModule.commitEntityState(zeroAt, showdraftBackground);
+
+        for (int i = 0; i < showdraftQuantity.length; i++)
+          if (showdraftQuantity[i] != null)
+          {
+            showdraftQuantity[i].setAlpha(0.99);
+            graphicEntityModule.commitEntityState(hideAt, showdraftQuantity[i]);
+            showdraftQuantity[i].setAlpha(0);
+            graphicEntityModule.commitEntityState(zeroAt, showdraftQuantity[i]);
+          }
+
+        for (CardUI card : cardsPool.values())
+            card
+                .touch()
+                .commit(hideAt)
+                .setVisible(false)
+                .commit(zeroAt)
+                .move(0, 0, engine.draft.showdraftCards.get(0))
+                .setVisible(false);
+
+        return;
+      }
+
+      ArrayList<Card> cards = engine.draft.showdraftCards;
+      int[] quantities = engine.draft.showdraftQuantities;
+
+      double CARD_SHOWDRAFT_SCALE = ConstantsUI.SHOWDRAFT_SCALE[engine.showdraftSizechoice];
+      Vector2D CARD_SHOWDRAFT_DIM  = Vector2D.mult(ConstantsUI.CARD_DIM, CARD_SHOWDRAFT_SCALE);
+      int rowsize = ConstantsUI.SHOWDRAFT_ROWSIZE[engine.showdraftSizechoice];
+      int colsize = - engine.initGameTurn;
+      int space = ConstantsUI.SHOWDRAFT_SPACE;
+
+      int xmargin = (ConstantsUI.SCREEN_DIM.x - rowsize * CARD_SHOWDRAFT_DIM.x - (rowsize-1) * space)/2;
+      int ymargin = (ConstantsUI.SCREEN_DIM.y - colsize * CARD_SHOWDRAFT_DIM.y - (colsize-1) * space)/2;
+      if (showdraftLoaded /rowsize == colsize-1)
+        xmargin = (ConstantsUI.SCREEN_DIM.x - (cards.size() %rowsize) * CARD_SHOWDRAFT_DIM.x - ((cards.size() %rowsize)-1) * space)/2;;
+      //System.out.println(ymargin + "    " + colsize);
+
+      int ypos = ymargin + (showdraftLoaded /rowsize) * (CARD_SHOWDRAFT_DIM.y + space);
+      int xpos = xmargin + (showdraftLoaded %rowsize) * (CARD_SHOWDRAFT_DIM.x + space);
+
+
+      // first LOAD
+      int limit = showdraftLoaded +(isinit?ConstantsUI.SHOWDRAFT_LOAD_INIT:ConstantsUI.SHOWDRAFT_LOAD_STEP);
+      for (int i = showdraftLoaded; i < Math.min(cards.size(), limit); i++)
+      {
+        showdraftLoaded++;
+        Card card = cards.get(i);
+        //System.out.println("("+xpos + "," + ypos+")");
+
+        getCardFromPool(card.baseId)
+                .setScale(CARD_SHOWDRAFT_SCALE)
+                .move(xpos, ypos, card)
+                .setVisibility(0.0)
+                .commit(0.0);
+
+        showdraftQuantity[i] = graphicEntityModule.createText(Integer.toString(quantities[card.baseId]))
+                .setAnchor(0.5)
+                .setFillColor(0xffffff)
+                .setFontSize(40)
+                .setStrokeColor(0x000000)
+                .setStrokeThickness(5.0)
+                .setAlpha(0.0)
+                .setX(xpos+20)
+                .setY(ypos+25);
+
+        if (i%rowsize==rowsize-1)
+        {
+          xpos = xmargin;
+          if (showdraftLoaded /rowsize == colsize-1 && cards.size() %rowsize != 0) // center last row
+          {
+            xpos = (ConstantsUI.SCREEN_DIM.x - (cards.size() %rowsize) * CARD_SHOWDRAFT_DIM.x - ((cards.size() %rowsize)-1) * space)/2;
+          }
+          ypos += CARD_SHOWDRAFT_DIM.y + space;
+        }
+        else
+        {
+          xpos += CARD_SHOWDRAFT_DIM.x + space;
+        }
+      }
+
+
+      // now SHOW
+      for (int x=0; x < rowsize; x++)
+      {
+        int index = showdraftShownrows * rowsize + x;
+        if (index >= cards.size())
+          break;
+        Card card = cards.get(index);
+        //System.out.format("%d / %d / %d \n", showdraftShownrows, x, index);
+        double alpha = quantities[card.baseId]>0 ? 1.0 : ConstantsUI.SHOWDRAFT_ALPHAZERO;
+        getCardFromPool(card.baseId).setVisibility(alpha);
+        showdraftQuantity[index].setAlpha(alpha);
+      }
+      showdraftShownrows++;
+
+
+      // todo show one row
+
+    }
+
+    public void draft(int turn)
+    {
+        gameManager.setFrameDuration(Constants.FRAME_DURATION_DRAFT);
+
+        if (turn == 0)
+        {
             newTurn = graphicEntityModule.createText("");
             deck[0] = graphicEntityModule.createText("");
             deck[1] = graphicEntityModule.createText("");
@@ -159,7 +296,7 @@ public class RefereeUI {
             .setStrokeThickness(4.0)
             .setX(ConstantsUI.SCREEN_DIM.x - (314/2) - 20)
             .setY(draftY);
-        
+
         graphicEntityModule.commitEntityState(0,  newTurnBackground, newTurn);
         drawManaCurve();
     }
@@ -168,6 +305,24 @@ public class RefereeUI {
     {
         for (int p=0; p<2; p++)
         {
+            cardTypesInfo[p] = graphicEntityModule.createText("     Creatures:\nGreen Items:\n     Red Items:\n    Blue Items:")
+                    .setAnchor(0.5)
+                    .setFontSize(ConstantsUI.MC_COST_FONTSIZE)
+                    .setFillColor(0xffffff)
+                    .setStrokeColor(0x000000)
+                    .setStrokeThickness(4.0)
+                    .setX(ConstantsUI.MC_TYINFO_X)
+                    .setY( ConstantsUI.MC_PLAYERS_OFFSET[p] + ConstantsUI.MC_TYINFO_Y);
+
+            cardTypesQuantity[p] = graphicEntityModule.createText("0\n0\n0\n0")
+                    .setAnchor(0.5)
+                    .setFontSize(ConstantsUI.MC_COST_FONTSIZE)
+                    .setFillColor(0xffffff)
+                    .setStrokeColor(0x000000)
+                    .setStrokeThickness(4.0)
+                    .setX(ConstantsUI.MC_TYINFO_X + ConstantsUI.MC_TYINFO_X_QUANTITY_OFFS)
+                    .setY(ConstantsUI.MC_PLAYERS_OFFSET[p] + ConstantsUI.MC_TYINFO_Y);
+
             for (int m = 0; m < 8; m++)
             {
                 manaCurveCosts[p][m] = graphicEntityModule.createText(m < 7 ? Integer.toString(m) : "7+")
@@ -203,12 +358,25 @@ public class RefereeUI {
         for (int p=0; p<2; p++)
         {
             int[] mc = new int[8];
+            int[] ct = new int[4];
 
             for (Card c : engine.draft.chosenCards[p])
             {
                 if (c.cost < 7) mc[c.cost]++;
                 else            mc[7]++;
+
+                switch (c.type)
+                {
+                    case CREATURE: ct[0]++; break;
+                    case ITEM_GREEN: ct[1]++; break;
+                    case ITEM_RED: ct[2]++; break;
+                    case ITEM_BLUE: ct[3]++; break;
+                }
             }
+            String[] cts = new String[4];
+            for (int i=0; i < 4; i++) cts[i] = ct[i] +  (ct[i] < 10 ? " " : "");
+            cardTypesQuantity[p].setText(String.join("\n", cts));
+
             int maxmc = Arrays.stream(mc).max().getAsInt();
             boolean overflow = maxmc  * ConstantsUI.MC_GRAPH_STEP > ConstantsUI.MC_GRAPH_MAXSIZE;
 
@@ -246,6 +414,8 @@ public class RefereeUI {
 
         for (int p=0; p<2; p++)
         {
+            cardTypesInfo[p].setAlpha(0);
+            cardTypesQuantity[p].setAlpha(0);
             for (int m = 0; m < 8; m++)
             {
                 manaCurveCosts[p][m].setAlpha(0);
@@ -280,7 +450,7 @@ public class RefereeUI {
         }
 
         graphicEntityModule.commitEntityState(0,  newTurn, newTurnBackground);
-        
+
         for (CardUI card : cardsPool.values())
             card.setVisible(false);
 

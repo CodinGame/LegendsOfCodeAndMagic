@@ -1,9 +1,7 @@
 package com.codingame.game.engine;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 import static com.codingame.game.engine.Constants.INITIAL_HAND_SIZE;
 
@@ -12,8 +10,8 @@ import static com.codingame.game.engine.Constants.INITIAL_HAND_SIZE;
  */
 public class Gamer
 {
-  int id;
-  //public boolean isSecond;
+  public int id;
+  public int bonusManaTurns;
   public ArrayList<Card> hand;
   public ArrayList<Card> deck;
   public ArrayList<CreatureOnBoard> board;
@@ -22,6 +20,7 @@ public class Gamer
   public int maxMana;
   public int currentMana;
   public int nextTurnDraw;
+  public int drawValueToShow;
 
   public ArrayList<Integer> runes = new ArrayList<Integer>() {{ add(5);add(10);add(15);add(20);add(25); }};
   public ArrayList<Action> performedActions;
@@ -40,9 +39,12 @@ public class Gamer
     this.graveyard = new ArrayList<>();
     this.performedActions = new ArrayList<>();
     this.health = Constants.INITIAL_HEALTH;
-    this.maxMana = 0;
-    this.currentMana = 0;
+    this.maxMana = id==1 && Constants.SECOND_PLAYER_MANA_BONUS_TURNS > 0 ? 1 : 0;
+    this.currentMana = this.maxMana;
     this.nextTurnDraw = 1;
+    this.drawValueToShow = this.nextTurnDraw;
+
+    bonusManaTurns = id==1? Constants.SECOND_PLAYER_MANA_BONUS_TURNS : 0;
 
     handLimit = Constants.MAX_CARDS_IN_HAND + (id==0 ? 0 : Constants.SECOND_PLAYER_MAX_CARD_BONUS);
     DrawCards(INITIAL_HAND_SIZE + (id==0 ? 0 : Constants.SECOND_PLAYER_CARD_BONUS), 0);
@@ -147,7 +149,8 @@ public class Gamer
 	  s.append(health).append(" ");
 	  s.append(maxMana).append(" ");
 	  s.append(deck.size()).append(" ");
-	  s.append(nextRune());
+	  s.append(nextRune()).append(" ");
+    s.append(drawValueToShow);
 	  return s.toString();
   }
 }

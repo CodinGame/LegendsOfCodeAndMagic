@@ -210,7 +210,8 @@ public class PlayerUI {
         hideImpact();
         hideHeal();
         health.setText(Integer.toString(gamer.health));
-        mana.setText(Integer.toString(gamer.currentMana) + "/" + Integer.toString(gamer.maxMana));
+        mana.setText(Integer.toString(gamer.currentMana) + "/" + Integer.toString(gamer.maxMana))
+                .setFillColor(gamer.bonusManaTurns > 0 ? 0x009000 : 0xffffff);
 
         for (int index = 0; index < 5; ++index)
             runes[index].setAlpha(gamer.runes.size() > index ? 1 : 0);

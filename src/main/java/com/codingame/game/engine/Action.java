@@ -56,17 +56,33 @@ public class Action
 
     if (type==Type.SUMMON)
     {
+      if (Constants.LANES==1)
+      {
+        try
+        {
+          String[] args = str[1].split(" ", 2);
+          int arg1;
+          arg1 = Integer.parseInt(args[0]);
+          String text = args.length < 2 ? "" : args[1].trim();
+          return Action.newSummon(arg1, text);
+        } catch (Exception e)
+        {
+          throw new InvalidActionHard("Invalid SUMMON argument. Expected integer (card id).");
+        }
+      }
+
       try
       {
-      String[] args = str[1].split(" ", 2);
-      int arg1;      
-      arg1 = Integer.parseInt(args[0]);
-      String text = args.length < 2 ? "" : args[1].trim();
-      return Action.newSummon(arg1, text);      
-      }
-      catch (Exception e)
+        String[] args = str[1].split(" ", 3);
+        int arg1;
+        int arg2;
+        arg1 = Integer.parseInt(args[0]);
+        arg2 = Integer.parseInt(args[1]);
+        String text = args.length < 3 ? "" : args[2].trim();
+        return Action.newSummon(arg1, arg2, text);
+      } catch (Exception e)
       {
-        throw new InvalidActionHard("Invalid SUMMON argument. Expected integer (card id).");
+        throw new InvalidActionHard("Invalid SUMMON arguments. Expected two integers (card id and target id).");
       }
     }
     else if (type==Type.PASS) {
@@ -77,10 +93,9 @@ public class Action
 
       try
       {
-          String[] args = str[1].split(" ", 3);
-
-          int arg1;
-          int arg2;
+        String[] args = str[1].split(" ", 3);
+        int arg1;
+        int arg2;
         arg1 = Integer.parseInt(args[0]);
         arg2 = Integer.parseInt(args[1]);
         String text = args.length < 3 ? "" : args[2].trim();
@@ -97,15 +112,26 @@ public class Action
 
   public static Action newSummon(int arg1)
   {
-    return newSummon(arg1, "");
+    return newSummon(arg1, 0, "");
   }
 
-  public static Action newSummon(int arg1, String text) // todo private?
+  public static Action newSummon(int arg1, String text)
+  {
+    return newSummon(arg1, 0, text);
+  }
+
+  public static Action newSummon(int arg1, int arg2)
+  {
+    return newSummon(arg1, arg2, "");
+  }
+
+  public static Action newSummon(int arg1, int arg2, String text) // todo private?
   {
     Action a = new Action();
     a.type = Type.SUMMON;
     a.cardType = Card.Type.CREATURE;
     a.arg1 = arg1;
+    a.arg2 = arg2; // lane
     a.text = text;
     return a;
   }
@@ -156,7 +182,7 @@ public class Action
   {
     switch (type)
     {
-      case SUMMON: return String.format("SUMMON %d", arg1);
+      case SUMMON: return (Constants.LANES==1) ? String.format("SUMMON %d", arg1) : String.format("SUMMON %d %d", arg1, arg2);
       case ATTACK: return String.format("ATTACK %d %d", arg1, arg2);
       case USE: return String.format("USE %d %d", arg1, arg2);
       case PASS: return "PASS";
@@ -169,7 +195,7 @@ public class Action
   {
     switch (type)
     {
-      case SUMMON: return String.format("SUMMON %d %s", arg1, text);
+      case SUMMON: return (Constants.LANES==1) ? String.format("SUMMON %d %s", arg1, text) : String.format("SUMMON %d %d %s", arg1, arg2, text);
       case ATTACK: return String.format("ATTACK %d %d %s", arg1, arg2, text);
       case USE: return String.format("USE %d %d %s", arg1, arg2, text);
       case PASS: return "PASS";

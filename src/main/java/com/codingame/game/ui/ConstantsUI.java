@@ -89,4 +89,17 @@ public class ConstantsUI {
     public static final int MC_GRAPH_MAXSIZE = 175;
     public static final int MC_GRAPH_ZEROSIZE = 2;
     public static final int[] MC_PLAYERS_OFFSET = {0, -860};
+    public static final int MC_TYINFO_X = 470 + 160;
+    public static final int MC_TYINFO_X_QUANTITY_OFFS = 130;
+    public static final int MC_TYINFO_Y = SCREEN_DIM.y - 220/2;
+
+    public static final int SHOWDRAFT_LOAD_INIT = 47; // max is 47
+    public static final int SHOWDRAFT_LOAD_STEP = 14; // max is 14
+    public static final double SHOWDRAFT_ALPHAZERO = 0.4;
+    public static final int[] SHOWDRAFT_SIZECHOICE = {90  , 60  , 30  , 15, };
+    public static final int[] SHOWDRAFT_ROWSIZE    = {15  , 12  , 10  , 5  };
+    public static final double[] SHOWDRAFT_SCALE   = {0.50, 0.65, 0.78, 1.10};
+    public static final int SHOWDRAFT_SPACE = 20;
+
+
 }

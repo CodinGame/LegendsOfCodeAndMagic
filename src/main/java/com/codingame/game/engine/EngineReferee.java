@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.codingame.game.Player;
 import com.codingame.game.engine.Action.Type;
+import com.codingame.game.ui.ConstantsUI;
 import com.codingame.game.ui.RefereeUI;
 import com.codingame.gameengine.core.AbstractPlayer.TimeoutException;
 import com.codingame.gameengine.core.MultiplayerGameManager;
@@ -17,9 +18,13 @@ public class EngineReferee {
 
     public int gamePlayer = 0;
     public int gameTurn = 0;
+    public int initGameTurn = 0;
+
     public List<Action> actionsToHandle = new ArrayList<>();
     
-    private boolean showStart = true;
+    private boolean showBattleStart = true;
+    private boolean showDraftStart = true;
+    public int showdraftSizechoice = 0;
     
     static final int ILLEGAL_ACTION_SUMMARY_LIMIT =3;
 
@@ -52,6 +57,16 @@ public class EngineReferee {
         draft = new DraftPhase(difficulty, params);
         draft.PrepareChoices();
 
+      for (int i=0; i < ConstantsUI.SHOWDRAFT_SIZECHOICE.length; i++)
+      {
+        if (draft.showdraftCards.size() > ConstantsUI.SHOWDRAFT_SIZECHOICE[i])
+          break;
+        showdraftSizechoice = i;
+      }
+      //System.out.println(showdraftSizechoice);
+        gameTurn = -1 - (int)Math.ceil(Math.max(0,(draft.showdraftCards.size() - ConstantsUI.SHOWDRAFT_ROWSIZE[showdraftSizechoice])) / (double)ConstantsUI.SHOWDRAFT_ROWSIZE[showdraftSizechoice]);
+        initGameTurn = gameTurn;
+
         if (Constants.VERBOSE_LEVEL > 1) System.out.println("   Draw Phase Prepared. " + draft.allowedCards.size() + " cards allowed. ");
         if (Constants.VERBOSE_LEVEL > 1) System.out.println("   " + draft.draftingCards.size() + " cards selected to the draft.");
 
@@ -59,16 +74,41 @@ public class EngineReferee {
     }
     
     
-    public boolean refereeGameTurn(MultiplayerGameManager<Player> gameManager, int turn, RefereeUI ui) {
-        if (showStart && gameTurn == Constants.CARDS_IN_DECK) {
-            showStart = false;
-            gameManager.addTooltip(gameManager.getPlayer(0), "Battle start!");
-            
+    public boolean refereeGameTurn(MultiplayerGameManager<Player> gameManager, RefereeUI ui)
+    {
+        if (showDraftStart && gameTurn ==0) {
+          showDraftStart = false;
+          gameManager.addTooltip(gameManager.getPlayer(0), "Draft phase.");
         }
-        if (gameTurn < Constants.CARDS_IN_DECK) {
+        if (showBattleStart && gameTurn == Constants.CARDS_IN_DECK) {
+            showBattleStart = false;
+            gameManager.addTooltip(gameManager.getPlayer(0), "Battle phase.");
+        }
+
+        if (gameTurn < 0)
+        {
+          //System.out.format("    /// %d\n", gameTurn);
+          ui.showDraftCards(gameTurn, false);
+          gameManager.getPlayer(0).expectedOutputLines = 0;
+          gameManager.getPlayer(0).execute();
+          gameManager.getPlayer(0).expectedOutputLines = 1;
+          gameTurn++;
+
+          if (gameTurn==0)
+            ui.showDraftCards(0, false); // clearing ??
+
+          return false;
+        }
+
+
+
+        if (gameTurn < Constants.CARDS_IN_DECK)
+        {
             DraftTurn(gameManager, () -> ui.draft(gameTurn));
             return false;
-        } else {
+        }
+        else
+        {
             return GameTurn(gameManager, () -> ui.battle(gameTurn));
         }
     }
@@ -123,8 +163,10 @@ public class EngineReferee {
             if (Constants.VERBOSE_LEVEL > 1) System.out.println("   Game phase");
             state = new GameState(draft);
 
-            gameManager.setTurnMaxTime(1); // weird try but works ^^
+            //gameManager.setTurnMaxTime(1); // weird try but works ^^
+            sdkplayer.expectedOutputLines = 0;
             sdkplayer.execute();
+            sdkplayer.expectedOutputLines = 1;
 
             render.run();
             return false;
@@ -132,8 +174,10 @@ public class EngineReferee {
 
         if (!actionsToHandle.isEmpty()) // there is a legal action on top of the list
         {
-            gameManager.setTurnMaxTime(1); // weird try but works ^^
+            //gameManager.setTurnMaxTime(1); // weird try but works ^^
+            sdkplayer.expectedOutputLines = 0;
             sdkplayer.execute();
+            sdkplayer.expectedOutputLines = 1;
 
             Action a = actionsToHandle.remove(0);
             gameManager.addToGameSummary("Player " + sdkplayer.getNicknameToken() + " performed action: " + a.toStringNoText());

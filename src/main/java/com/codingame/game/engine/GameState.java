@@ -17,7 +17,6 @@ public class GameState
 
   public GameState(DraftPhase draft)
   {
-    
     assert( draft.decks[0].size()==Constants.CARDS_IN_DECK);
     assert( draft.decks[1].size()==Constants.CARDS_IN_DECK);
 
@@ -51,34 +50,58 @@ public class GameState
     Gamer player = players[currentPlayer];
     ArrayList<Action> actions = new ArrayList<>();
 
-    if (player.board.size() == Constants.MAX_CREATURES_IN_LINE)
-      return actions;
 
-    for (Card c:player.hand)
+    if (Constants.LANES==1)
     {
-      if (c.type != Card.Type.CREATURE || c.cost > player.currentMana)
+      if (player.board.size() == Constants.MAX_CREATURES_IN_LINE)
+        return actions;
+
+      for (Card c : player.hand)
+      {
+        if (c.type != Card.Type.CREATURE || c.cost > player.currentMana)
+          continue;
+        actions.add(Action.newSummon(c.id));
+      }
+
+      return actions;
+    }
+
+    int[] creaturesinline = new int[Constants.LANES];
+    for (CreatureOnBoard c:player.board)
+      creaturesinline[c.lane]++;
+
+    for (int l=0; l < Constants.LANES; l++)
+    {
+      if (creaturesinline[l] == Constants.MAX_CREATURES_IN_LINE / Constants.LANES)
         continue;
-      actions.add(Action.newSummon(c.id));
+
+      for (Card c : player.hand)
+      {
+        if (c.type != Card.Type.CREATURE || c.cost > player.currentMana)
+          continue;
+        actions.add(Action.newSummon(c.id, l));
+      }
     }
 
     return actions;
   }
 
-  private List<Integer> computeLegalTargets()
+  private List<Integer> computeLegalTargets(int lane)
   {
     Gamer enemyPlayer = players[1 - currentPlayer];
 
     ArrayList<Integer> targets = new ArrayList<>();
 
     for (CreatureOnBoard c : enemyPlayer.board) // First priority - guards
-      if (c.keywords.hasGuard)
+      if (c.keywords.hasGuard && c.lane==lane)
         targets.add(c.id);
 
     if (targets.isEmpty()) // if no guards we can freely attack any creature plus face
     {
       targets.add(-1);
       for (CreatureOnBoard c : enemyPlayer.board)
-        targets.add(c.id);
+        if (c.lane==lane)
+          targets.add(c.id);
     }
 
     return targets;
@@ -87,20 +110,33 @@ public class GameState
   public List<Action> computeLegalAttacks()
   {
     Gamer player = players[currentPlayer];
-
-    List<Integer> targets = computeLegalTargets();
-
     ArrayList<Action> actions = new ArrayList<>();
+    List<Integer> targets;
 
-    for (CreatureOnBoard c:player.board)
+    if (Constants.LANES==1)
+    {
+      targets = computeLegalTargets(0);
+
+      for (CreatureOnBoard c : player.board)
+      {
+        if (!c.canAttack)
+          continue;
+        for (Integer tid : targets)
+          actions.add(Action.newAttack(c.id, tid));
+      }
+      return actions;
+    }
+
+    for (CreatureOnBoard c : player.board)
     {
       if (!c.canAttack)
         continue;
-      for (Integer tid: targets)
+      targets = computeLegalTargets(c.lane);
+      for (Integer tid : targets)
         actions.add(Action.newAttack(c.id, tid));
     }
-
     return actions;
+
   }
 
   public List<Action> computeLegalItems()
@@ -142,15 +178,24 @@ public class GameState
       c.hasAttacked = false;
     }
 
+    players[currentPlayer].drawValueToShow = players[currentPlayer].nextTurnDraw; // this is the correct way
+
     currentPlayer = 1 - currentPlayer;
     Gamer player = players[currentPlayer];
     player.performedActions.clear();
     turn++;
 
 
-    if (player.maxMana < Constants.MAX_MANA)
+    if (player.maxMana < Constants.MAX_MANA + (player.bonusManaTurns > 0 ? 1 : 0 ))
     {
       player.maxMana += 1;
+    }
+
+    if (player.bonusManaTurns > 0 && player.currentMana==0)
+    {
+      player.bonusManaTurns--;
+      if (player.bonusManaTurns==0)
+        player.maxMana--;
     }
 
     player.currentMana = player.maxMana;
@@ -164,6 +209,7 @@ public class GameState
     }
 
     player.DrawCards(player.nextTurnDraw, turn/2);
+    player.drawValueToShow = player.nextTurnDraw;
     player.nextTurnDraw = 1;
     CheckWinCondition();
   }
@@ -176,7 +222,7 @@ public class GameState
 
       players[currentPlayer].hand.remove(c);
       players[currentPlayer].currentMana -= c.cost;
-      CreatureOnBoard creature = new CreatureOnBoard(c);
+      CreatureOnBoard creature = (Constants.LANES==1) ? new CreatureOnBoard(c, 0) : new CreatureOnBoard(c, action.arg2);
       players[currentPlayer].board.add(creature);
 
       players[currentPlayer].ModifyHealth(c.myHealthChange);
@@ -445,7 +491,10 @@ public class GameState
     Gamer player = players[currentPlayer];
     Gamer opponent = players[1-currentPlayer];
 
-    lines.add(String.valueOf(opponent.hand.size()));
+    lines.add(String.valueOf(opponent.hand.size()) + " " + toString().valueOf(opponent.performedActions.size()));
+    for (Action a:opponent.performedActions)
+      lines.add(String.valueOf(cardIdMap.get(a.arg1).baseId)+ " " + a.toStringNoText());
+
     int cardCount = player.hand.size() + player.board.size() + opponent.board.size();
     lines.add(String.valueOf(cardCount));
 

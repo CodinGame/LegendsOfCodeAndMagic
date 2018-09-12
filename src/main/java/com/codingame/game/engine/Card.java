@@ -264,7 +264,7 @@ public class Card {
     return sb.toString();
   }
 
-  public String toHTMLString()
+  public String toHTMLString(String teslcomment)
   {
     
     StringBuilder sb = new StringBuilder();
@@ -293,7 +293,7 @@ public class Card {
     sb.append("<td>").append(cardDraw).append("</td>");
 
     Pattern tesllink = Pattern.compile("@(\\d+)=(['\\w-]+)");
-    String htmlcomment = comment;
+    String htmlcomment = teslcomment==null ? "" : teslcomment;
     Matcher m = tesllink.matcher(htmlcomment);
     while (m.find())
     {
@@ -310,7 +310,9 @@ public class Card {
     else
       sb.append("<td><i>").append(toTextDescription()).append("</i></td>");
 
-    sb.append("<!--<td>").append(htmlcomment).append("</td>-->");
+    //sb.append("<!--<td>").append(htmlcomment).append("</td>-->");
+    if (htmlcomment.length() > 0)
+      sb.append("<td>").append(htmlcomment).append("</td>");
 
 
             // card = "<tr><td>" + card.replace(";", "</td><td>") + "</td></tr>\n";
@@ -382,6 +384,10 @@ public class Card {
 	  s.append(myHealthChange).append(" ");
 	  s.append(oppHealthChange).append(" ");
 	  s.append(cardDraw).append(" ");
+
+	  if (Constants.LANES>1)
+      s.append(-1).append(" ");
+
 	  return s.toString();
   }
 }

@@ -28,6 +28,9 @@ public class DraftPhase
   private Random[] shufflesRNG;
   private RefereeParams params;
 
+  public int[] showdraftQuantities;
+  public ArrayList<Card> showdraftCards;
+
   // todo - add function and field documentation
 
   public DraftPhase(Difficulty difficulty, RefereeParams params)
@@ -78,15 +81,23 @@ public class DraftPhase
     if (params.predefinedDraftIds != null) // parameter-forced draft choices
     {
       draftingCards = new ArrayList<>(); // 0 size is ok here? in hand-made draft this is meaningless variable
+      HashSet<Integer> cardsInDraft = new HashSet<>();
+
       draft = new Card[Constants.CARDS_IN_DECK][3];
       for(int pick=0; pick <  Constants.CARDS_IN_DECK; pick++)
       {
         for (int i=0; i < 3; i++)
         {
           draft[pick][i] = Constants.CARDSET.get(params.predefinedDraftIds[pick][i]);
+          cardsInDraft.add(params.predefinedDraftIds[pick][i]);
         }
       }
 
+
+      for (int baseId : cardsInDraft)
+        draftingCards.add(Constants.CARDSET.get(baseId));
+
+      prepareShowdraft();
       return;
     }
 
@@ -128,7 +139,25 @@ public class DraftPhase
       draft[pick][2] = allowedCards.get(choice3);
     }
 
-    //return draftCards;
+    prepareShowdraft();
+  }
+
+  private void prepareShowdraft()
+  {
+    showdraftQuantities = new int[161];
+    for (int choice = 0; choice < 90; choice++)
+      showdraftQuantities[draft[choice/3][choice%3].baseId]++;
+
+    showdraftCards = new ArrayList<>(draftingCards);
+
+    showdraftCards.sort((lhs, rhs) -> {
+      if (lhs.cost == rhs.cost && showdraftQuantities[rhs.baseId] == showdraftQuantities[lhs.baseId])
+        return lhs.baseId - rhs.baseId;
+      else if (lhs.cost == rhs.cost)
+        return showdraftQuantities[rhs.baseId] - showdraftQuantities[lhs.baseId];
+      else
+        return lhs.cost - rhs.cost;
+    });
   }
 
   public ChoiceResultPair PlayerChoice(int pickNumber, String action, int player) throws InvalidActionHard
@@ -207,9 +236,9 @@ public class DraftPhase
   
   public String[] getMockPlayersInput(int player, int turn) {
 	    ArrayList<String> lines = new ArrayList<>();
-	    lines.add(join(Constants.INITIAL_HEALTH, 0, turn , 25));
-	    lines.add(join(Constants.INITIAL_HEALTH, 0, player==0 ? turn : (turn+1), 25));
-	    lines.add("0");
+	    lines.add(join(Constants.INITIAL_HEALTH, 0, turn , 25, 0));
+	    lines.add(join(Constants.INITIAL_HEALTH, 0, player==0 ? turn : (turn+1), 25, 0));
+	    lines.add("0 0");
 	    lines.add("3");
 	    
 	    
