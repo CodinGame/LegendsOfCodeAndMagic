@@ -3,7 +3,7 @@
 ## Links
 
 - [LOCM webpage](https://jakubkowalski.tech/Projects/LOCM/)
-- [CodinGame challenge](https://www.codingame.com/contests/legends-of-code-and-magic-marathon)
+- [CodinGame multiplayer](https://www.codingame.com/multiplayer/bot-programming/legends-of-code-magic)
 
 ## Justification
 
@@ -72,12 +72,6 @@ Enemies must attack this creature.
 Removes any creature it damages.
 
 Important cases: It does not remove creatures with ward. If lethal attack is equal zero, ability do not trigger (no damage done).
-
-
-#### ~~Regenerate~~ (removed :(  )
-~~Heals at the start of the player's turn.~~
-
-~~Important cases: If at the beginning of the player's turn the creature's defense is lower then in the previous turn, the previous turn's value is restored. Otherwise, the new value of the creature's defense is stored for the next turn regeneration.~~
 
 
 #### Ward
