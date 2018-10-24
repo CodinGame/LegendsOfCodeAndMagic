@@ -87,15 +87,10 @@ public class EngineReferee {
 
         if (gameTurn < 0)
         {
-          //System.out.format("    /// %d\n", gameTurn);
-          ui.showDraftCards(gameTurn, false);
           gameManager.getPlayer(0).expectedOutputLines = 0;
           gameManager.getPlayer(0).execute();
           gameManager.getPlayer(0).expectedOutputLines = 1;
           gameTurn++;
-
-          if (gameTurn==0)
-            ui.showDraftCards(0, false); // clearing ??
 
           return false;
         }
