@@ -46,6 +46,9 @@ export class EndScreenModule {
     this.toDestroy = []
     this.container = container
     this.endLayer = this.createEndScene(this)
+    if (this.atEnd) {
+      this.initEndScene()
+    }
     this.container.addChild(this.endLayer)
     this.toPixel = (WIDTH / canvasData.width) * canvasData.oversampling
   }
