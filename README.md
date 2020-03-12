@@ -134,7 +134,7 @@ Important case: Actions that are syntactically valid, but not legal (e.g. summon
 
 ### Draft probabilities
 
-Draft contains 90 cards to choose from, presented o both players in triplets. The choices are computed as follows.
+Draft contains 90 cards to choose from, presented to both players in triplets. The choices are computed as follows.
 
 First, the game uniformly randomizes 60 cards from the cards available. Then for each draft turn, three cards are randomized for this 60. If a card already occured in this triple it is redrawn until a new card is found. Thus, in every triple all three cards are different. 
 
